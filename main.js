@@ -52,21 +52,26 @@ const gameBoard = (function() {
 const displayController = (function() {
     // loop through each board array and display them
 
-    const _winScreen = function(winner, winnerSide) {
-        const body = document.createElement('body');
+    const winScreen = function(winner, winnerSide) {
+        const body = document.querySelector('body');
         const modalWrap = document.createElement('div');
         const modalContainer = document.createElement('div');
         const header = document.createElement('h1');
         const text = document.createElement('p');
+        const button = document.createElement('button');
+
+        header.textContent = 'Congratulations!'
+        text.textContent = `${winner} has won the game! (Side ${winnerSide})`
+        button.textContent = 'Continue'
 
         body.appendChild(modalWrap);
         modalWrap.appendChild(modalContainer);
         modalContainer.appendChild(header);
         modalContainer.appendChild(text);
-
+        modalContainer.appendChild(button);
+        
         modalWrap.classList.add('modal-bg');
         modalContainer.classList.add('modal-container');
-
     }
 
     const displayBoard = function() {
@@ -87,20 +92,19 @@ const displayController = (function() {
             })
         }
     }
-    const clearBoard = function(winner, winnerSide) {
+    const clearBoard = function() {
         for ( value in gameBoard ) {
             for ( i = 0; i < gameBoard[value].length; i++) {
                 gameBoard[value][i] = null;
             }
         }
         const body = document.querySelector('body');
-        _winScreen(winner, winnerSide);
         const boxes = document.querySelectorAll('.box-content');
         boxes.forEach((box) => {
             box.textContent = null;
         })
     }
-    return {displayBoard, clearBoard};
+    return {displayBoard, clearBoard, winScreen};
 })();
 
 // Main module that controls the game and its function
@@ -122,13 +126,13 @@ const gameController = (function() {
             board = arrayBoard();
             for ( i = 0; i < board.length; i++ ) {
                 if (board[i] == board[i+3] && board[i] == board[i+6] && board[i] != null) {
-                    displayController.clearBoard(player.name, player.side);
+                    displayController.winScreen(player.name, player.side);
                     break;
                 } else if (board[i] == board[i+4] && board[i] == board[i+8] && board[i] != null) {
-                    displayController.clearBoard(player.name, player.side);
+                    displayController.winScreen(player.name, player.side);
                     break
                 } else if (board[2] == board[4] && board[2] == board[6] && board[2] != null) {
-                    displayController.clearBoard(player.name, player.side);
+                    displayController.winScreen(player.name, player.side);
                     break
                 } else {
                     return;
