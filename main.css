@@ -100,20 +100,49 @@
     bottom: 0;
     left: 0;
     right: 0;
-    display: flex;
     align-items: center;
     justify-content: center;
+    display: none;
 }
 
 .modal-container {
     display: flex;
     flex-wrap: wrap;
+    flex-direction: column;
     background: white;
     width: 40vw;
     height: 40vh;
     border-radius: 30px;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
 }
 
-.modal-container > * {
-    flex: 1 1 100%;
+.modal-container h1, .modal-container p {
+    text-align: center;
+    font-family: 'Roboto', sans-serif;
+}
+
+.modal-container h1 {
+    font-size: 48px;
+}
+
+.modal-container p {
+    font-size: 20px;
+    font-weight: 300;
+    margin: 24px 0 100px 0;
+
+}
+
+.modal-container button {
+    text-align: center;
+    font-family: 'Roboto', sans-serif;
+    font-size: 24px;
+    padding: 12px 24px;
+    border-radius: 25px;
+    border: 0.5px solid gray;
+}
+
+.modal-container button:hover, .buttons button:hover {
+    background-color: gainsboro;
 }

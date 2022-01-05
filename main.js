@@ -50,30 +50,32 @@ const gameBoard = (function() {
 
 // Module that controls the displaying of content
 const displayController = (function() {
-    // loop through each board array and display them
 
+    // produce a winning screen, and reset the game + array
     const winScreen = function(winner, winnerSide) {
-        const body = document.querySelector('body');
-        const modalWrap = document.createElement('div');
-        const modalContainer = document.createElement('div');
-        const header = document.createElement('h1');
-        const text = document.createElement('p');
-        const button = document.createElement('button');
-
-        header.textContent = 'Congratulations!'
+        const modal = document.querySelector('.modal-bg');
+        const button = document.querySelector('.continue');
+        const text = document.querySelector('.modal-container p');
         text.textContent = `${winner} has won the game! (Side ${winnerSide})`
-        button.textContent = 'Continue'
 
-        body.appendChild(modalWrap);
-        modalWrap.appendChild(modalContainer);
-        modalContainer.appendChild(header);
-        modalContainer.appendChild(text);
-        modalContainer.appendChild(button);
-        
-        modalWrap.classList.add('modal-bg');
-        modalContainer.classList.add('modal-container');
+        modal.style.display = "flex";
+        double.style.backgroundColor = "whitesmoke";
+        button.addEventListener('click', clearBoard);
     }
 
+    // produce a tie screen, and reset the game + array
+    const tieScreen = function() {
+        const modal = document.querySelector('.modal-bg');
+        const button = document.querySelector('.continue');
+        const text = document.querySelector('.modal-container p');
+        text.textContent = `It's a tie :(`;
+
+        modal.style.display = "flex";
+        double.style.backgroundColor = "whitesmoke";
+        button.addEventListener('click', clearBoard);
+    }
+
+    // loop through each board array and display them
     const displayBoard = function() {
         for ( value in gameBoard ) {
             let column = 0;
@@ -93,6 +95,7 @@ const displayController = (function() {
         }
     }
     const clearBoard = function() {
+        document.querySelector('.modal-bg').style.display = "none";
         for ( value in gameBoard ) {
             for ( i = 0; i < gameBoard[value].length; i++) {
                 gameBoard[value][i] = null;
@@ -104,7 +107,7 @@ const displayController = (function() {
             box.textContent = null;
         })
     }
-    return {displayBoard, clearBoard, winScreen};
+    return {displayBoard, winScreen, tieScreen};
 })();
 
 // Main module that controls the game and its function
@@ -120,7 +123,7 @@ const gameController = (function() {
         for ( player of playersList ) {
             for ( value in board ) {
                 if (board[value][0] == board[value][1] && board[value][0] == board[value][2] && board[value][0] != null) {
-                    displayController.clearBoard(player.name, player.side);
+                    displayController.winScreen(player.name, player.side);
                 }
             }
             board = arrayBoard();
@@ -134,6 +137,9 @@ const gameController = (function() {
                 } else if (board[2] == board[4] && board[2] == board[6] && board[2] != null) {
                     displayController.winScreen(player.name, player.side);
                     break
+                } else if ( board.includes(null) == false ) {
+                    displayController.tieScreen();
+                    break
                 } else {
                     return;
                 }
@@ -141,6 +147,7 @@ const gameController = (function() {
         }
     } 
     const boxListener = function() {
+        double.style.backgroundColor = "silver";
         const boxes = document.querySelectorAll('.box-content');
         boxes.forEach((box) => {
             box.addEventListener('click', _addContent);
@@ -173,7 +180,7 @@ const gameController = (function() {
     };
 
     displayController.displayBoard();
-    return {boxListener, arrayBoard, playersList};
+    return {boxListener};
 
 })();
 
