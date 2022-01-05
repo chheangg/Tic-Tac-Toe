@@ -8,10 +8,11 @@ const players = function(name, turnID, side) {
 
 // create Two Players and assign them a side
 const playersList = (function() {
-    const playerOne = players('Player One', 0, null);
-    const playerTwo = players('Player Two', 0, null);
+    let playerOne;
+    let playerTwo;
+
     // find a randomside for player one
-    const _randSide = function() {
+    const randSide = function() {
         let randValue = Math.floor(Math.random() * 2);
         let side;
         if (randValue == 0) {
@@ -22,17 +23,29 @@ const playersList = (function() {
         return side;
     }
     // find a side for player two based on player one
-    const _autoSet = function() {
+    const autoSide = function() {
         if ( playerOne.side == 'X' ) {
             return 'O';
         } else if (playerOne.side == 'O') {
             return 'X';
         }
     }
+    const _autoSet = function() {
+        playerOne = players('Player One', 0, null);
+        playerTwo = players('Player Two', 1, null);
+        playerOne.side = randSide();
+        playerTwo.side = autoSide();
+    }
 
-    playerOne.side = _randSide();
-    playerTwo.side = _autoSet();
+    const _reset = function() {
+        playerOne.turnID = 0;
+        playerTwo.turnID = 1;
+        playerOne.side = randSide();
+        playerTwo.side = autoSide();
+    }
 
+    _autoSet();
+    document.querySelector('.continue').addEventListener('click', _reset);
     return [playerOne, playerTwo];
 })()
 
@@ -101,11 +114,11 @@ const displayController = (function() {
                 gameBoard[value][i] = null;
             }
         }
-        const body = document.querySelector('body');
         const boxes = document.querySelectorAll('.box-content');
         boxes.forEach((box) => {
             box.textContent = null;
         })
+
     }
     return {displayBoard, winScreen, tieScreen};
 })();
@@ -118,31 +131,35 @@ const gameController = (function() {
     const arrayBoard = function() {
         return gameBoard[0].concat(gameBoard[1], gameBoard[2])
     }
+    const _checkPlayer = function(winValue) {
+        playersList.forEach((player) => {
+            if ( player.side == winValue) {
+                displayController.winScreen(player.name, player.side);
+            }
+        })
+        displayController.winScreen(player.name, player.side);
+    }
     const _evaluateRound = function() {
         let board = rowBoard();
-        for ( player of playersList ) {
-            for ( value in board ) {
-                if (board[value][0] == board[value][1] && board[value][0] == board[value][2] && board[value][0] != null) {
-                    displayController.winScreen(player.name, player.side);
-                }
+        for ( value in board ) {
+            if (board[value][0] == board[value][1] && board[value][0] == board[value][2] && board[value][0] != null) {
+                _checkPlayer(board[i]);
             }
-            board = arrayBoard();
-            for ( i = 0; i < board.length; i++ ) {
-                if (board[i] == board[i+3] && board[i] == board[i+6] && board[i] != null) {
-                    displayController.winScreen(player.name, player.side);
-                    break;
-                } else if (board[i] == board[i+4] && board[i] == board[i+8] && board[i] != null) {
-                    displayController.winScreen(player.name, player.side);
-                    break
-                } else if (board[2] == board[4] && board[2] == board[6] && board[2] != null) {
-                    displayController.winScreen(player.name, player.side);
-                    break
-                } else if ( board.includes(null) == false ) {
-                    displayController.tieScreen();
-                    break
-                } else {
-                    return;
-                }
+        }
+        board = arrayBoard();
+        for ( i = 0; i < board.length; i++ ) {
+            if (board[i] == board[i+3] && board[i] == board[i+6] && board[i] != null) {
+                _checkPlayer(board[i]);
+                break;
+            } else if (board[i] == board[i+4] && board[i] == board[i+8] && board[i] != null) {
+                _checkPlayer(board[i]);
+                break;
+            } else if (board[2] == board[4] && board[2] == board[6] && board[2] != null) {
+                _checkPlayer(board[i]);
+                break;
+            } else if ( board.includes(null) == false ) {
+                displayController.tieScreen();
+                break;
             }
         }
     } 
